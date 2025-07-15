@@ -1,5 +1,5 @@
-# [Choice] bionic (18.04), focal (20.04)
-ARG VARIANT="focal"
+# [Choice] bionic (18.04), focal (20.04), jammy (22.04), noble (24.04)
+ARG VARIANT="noble"
 FROM ubuntu:${VARIANT}
 
 # Restate the variant to use it later on in the llvm and cmake installations
@@ -11,11 +11,13 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
         software-properties-common wget apt-utils file zip \
         openssh-client gpg-agent socat rsync \
         make ninja-build git \
-        python3 python3-pip
+        python3 python3-pip python3-venv
 
 # Install conan
-RUN python3 -m pip install --upgrade pip setuptools && \
-    python3 -m pip install conan && \
+RUN python3 -m venv /opt/conan-venv && \
+    /opt/conan-venv/bin/pip install --upgrade pip setuptools && \
+    /opt/conan-venv/bin/pip install conan && \
+    ln -s /opt/conan-venv/bin/conan /usr/local/bin/conan && \
     conan --version
 
 # By default, anything you run in Docker is done as superuser.
@@ -28,9 +30,8 @@ ENV CONAN_SYSREQUIRES_SUDO 0
 ENV CONAN_SYSREQUIRES_MODE enabled
 
 # User-settable versions:
-# This Dockerfile should support gcc-[7, 8, 9, 10, 11] and clang-[10, 11, 12, 13]
 # Earlier versions of clang will require significant modifications to the IWYU section
-ARG GCC_VER="11"
+ARG GCC_VER="14"
 # Add gcc-${GCC_VER}
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
@@ -41,7 +42,7 @@ RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
 RUN update-alternatives --install /usr/bin/gcc gcc $(which gcc-${GCC_VER}) 100
 RUN update-alternatives --install /usr/bin/g++ g++ $(which g++-${GCC_VER}) 100
 
-ARG LLVM_VER="13"
+ARG LLVM_VER="20"
 # Add clang-${LLVM_VER}
 ARG LLVM_URL="http://apt.llvm.org/${VARIANT}/"
 ARG LLVM_PKG="llvm-toolchain-${VARIANT}-${LLVM_VER}"
