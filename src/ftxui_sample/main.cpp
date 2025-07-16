@@ -22,7 +22,7 @@
 
 #include <lefticus/tools/non_promoting_ints.hpp>
 
-// This file will be generated automatically when cur_you run the CMake
+// This file will be generated automatically when you run the CMake
 // configuration step. It creates a namespace called `cpp_template`. You can modify
 // the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
@@ -229,7 +229,7 @@ private:
 namespace {
 void game_iteration_canvas()
 {
-  // this should probably have a `bitmap` helper function that does what cur_you expect
+  // this should probably have a `bitmap` helper function that does what you expect
   // similar to the other parts of FTXUI
   auto bm = std::make_shared<Bitmap>(50, 50);// NOLINT magic numbers
   auto small_bm = std::make_shared<Bitmap>(6, 6);// NOLINT magic numbers
@@ -330,7 +330,8 @@ void game_iteration_canvas()
 int main(int argc, const char **argv)
 {
   try {
-    CLI::App app{ fmt::format("{} version {}", cpp_template::cmake::project_name, cpp_template::cmake::project_version) };
+    CLI::App app{ fmt::format(
+      "{} version {}", cpp_template::cmake::project_name, cpp_template::cmake::project_version) };
 
     std::optional<std::string> message;
     app.add_option("-m,--message", message, "A message to print back out");
