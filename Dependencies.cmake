@@ -8,10 +8,6 @@ function(cpp_template_setup_dependencies)
   # For each dependency, see if it's
   # already been provided to us by a parent project
 
-  if(NOT TARGET fmtlib::fmtlib)
-    cpmaddpackage("gh:fmtlib/fmt#11.1.4")
-  endif()
-
   if(NOT TARGET spdlog::spdlog)
     cpmaddpackage(
       NAME
@@ -19,9 +15,7 @@ function(cpp_template_setup_dependencies)
       VERSION
       1.15.2
       GITHUB_REPOSITORY
-      "gabime/spdlog"
-      OPTIONS
-      "SPDLOG_FMT_EXTERNAL ON")
+      "gabime/spdlog")
   endif()
 
   if(NOT TARGET Catch2::Catch2WithMain)
@@ -34,10 +28,6 @@ function(cpp_template_setup_dependencies)
 
   if(NOT TARGET ftxui::screen)
     cpmaddpackage("gh:ArthurSonzogni/FTXUI@6.0.2")
-  endif()
-
-  if(NOT TARGET tools::tools)
-    cpmaddpackage("gh:lefticus/tools#update_build_system")
   endif()
 
 endfunction()
