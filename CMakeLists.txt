@@ -14,6 +14,15 @@ endif()
 # when compiling with PCH enabled
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Fix c++ linker issues on macOS with Clang 18 and later
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin"
+        AND CMAKE_SYSTEM_PROCESSOR MATCHES "arm64"
+        AND CMAKE_CXX_COMPILER_ID MATCHES "Clang"
+        AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 18)
+    link_libraries(/opt/homebrew/opt/llvm/lib/libunwind.dylib)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -L/opt/homebrew/opt/llvm/lib/c++")
+endif()
+
 # Set the project name and language
 project(
   cpp_template
