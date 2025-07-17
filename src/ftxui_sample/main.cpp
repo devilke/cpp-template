@@ -1,3 +1,4 @@
+#include <CLI/CLI.hpp>
 #include <array>
 #include <atomic>
 #include <chrono>
@@ -5,31 +6,27 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
-#include <fmt/base.h>
-#include <fmt/format.h>
+#include <format>
+#include <ftxui/component/component.hpp>// for Slider
+#include <ftxui/component/screen_interactive.hpp>// for ScreenInteractive
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/dom/node.hpp>
 #include <ftxui/screen/screen.hpp>
 #include <functional>
 #include <optional>
-
+#include <print>
 #include <random>
-
-#include <CLI/CLI.hpp>
-#include <ftxui/component/component.hpp>// for Slider
-#include <ftxui/component/screen_interactive.hpp>// for ScreenInteractive
 #include <spdlog/spdlog.h>
-
-#include <lefticus/tools/non_promoting_ints.hpp>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
 
 // This file will be generated automatically when you run the CMake
 // configuration step. It creates a namespace called `cpp_template`. You can modify
 // the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
-#include <string>
-#include <thread>
-#include <utility>
-#include <vector>
+
 
 template<std::size_t Width, std::size_t Height> struct GameBoard
 {
@@ -112,7 +109,7 @@ void consequence_game()
   std::string quit_text;
 
   const auto update_quit_text = [&quit_text](const auto &game_board_param) {
-    quit_text = fmt::format("Quit ({} moves)", game_board_param.move_count);
+    quit_text = std::format("Quit ({} moves)", game_board_param.move_count);
     if (game_board_param.solved()) { quit_text += " Solved!"; }
   };
 
@@ -159,9 +156,9 @@ void consequence_game()
   std::mt19937 gen32{ random_seed };// NOLINT fixed seed
 
   // NOLINTNEXTLINE This cannot be const
-  std::uniform_int_distribution<std::size_t> cur_x(static_cast<std::size_t>(0), game_board.width - 1);
+  std::uniform_int_distribution<std::size_t> cur_x(0UL, game_board.width - 1);
   // NOLINTNEXTLINE This cannot be const
-  std::uniform_int_distribution<std::size_t> cur_y(static_cast<std::size_t>(0), game_board.height - 1);
+  std::uniform_int_distribution<std::size_t> cur_y(0UL, game_board.height - 1);
 
   for (int i = 0; i < randomization_iterations; ++i) { game_board.press(cur_x(gen32), cur_y(gen32)); }
   game_board.move_count = 0;
@@ -179,9 +176,9 @@ void consequence_game()
 
 struct Color
 {
-  lefticus::tools::uint_np8_t R{ static_cast<std::uint8_t>(0) };
-  lefticus::tools::uint_np8_t G{ static_cast<std::uint8_t>(0) };
-  lefticus::tools::uint_np8_t B{ static_cast<std::uint8_t>(0) };
+  uint8_t R{ 0 };
+  uint8_t G{ 0 };
+  uint8_t B{ 0 };
 };
 
 // A simple way of representing a bitmap on screen using only characters
@@ -207,8 +204,8 @@ struct Bitmap : ftxui::Node
         pixel.character = "▄";
         const auto &top_color = at(cur_x, cur_y * 2);
         const auto &bottom_color = at(cur_x, (cur_y * 2) + 1);
-        pixel.background_color = ftxui::Color{ top_color.R.get(), top_color.G.get(), top_color.B.get() };
-        pixel.foreground_color = ftxui::Color{ bottom_color.R.get(), bottom_color.G.get(), bottom_color.B.get() };
+        pixel.background_color = ftxui::Color{ top_color.R, top_color.G, top_color.B };
+        pixel.foreground_color = ftxui::Color{ bottom_color.R, bottom_color.G, bottom_color.B };
       }
     }
   }
@@ -330,7 +327,7 @@ void game_iteration_canvas()
 int main(int argc, const char **argv)
 {
   try {
-    CLI::App app{ fmt::format(
+    CLI::App app{ std::format(
       "{} version {}", cpp_template::cmake::project_name, cpp_template::cmake::project_version) };
 
     std::optional<std::string> message;
@@ -351,7 +348,7 @@ int main(int argc, const char **argv)
     CLI11_PARSE(app, argc, argv);
 
     if (show_version) {
-      fmt::print("{}\n", cpp_template::cmake::project_version);
+      std::print("{}\n", cpp_template::cmake::project_version);
       return EXIT_SUCCESS;
     }
 
