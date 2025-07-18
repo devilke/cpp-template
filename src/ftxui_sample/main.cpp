@@ -151,7 +151,7 @@ void consequence_game()
 
 
   static constexpr int randomization_iterations = 100;
-  static constexpr int random_seed = 420;
+  static constexpr int random_seed = 42;
 
   std::mt19937 gen32{ random_seed };// NOLINT fixed seed
 
