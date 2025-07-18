@@ -4,7 +4,6 @@ on:
   release:
     types: [published]
   push:
-    tags:
     branches:
       - main
       - develop
@@ -130,19 +129,10 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Setup Cache
-        uses: ./.github/actions/setup_cache
-        with:
-          compiler: ${{ matrix.compiler }}
-          build_type: ${{ matrix.build_type }}
-          packaging_maintainer_mode: ${{ matrix.packaging_maintainer_mode }}
-          generator: ${{ matrix.generator }}
-
       - name: Project Name
         uses: cardinalby/export-env-action@v2
         with:
           envFile: '.github/constants.env'
-
 
       - name: Setup Cpp
         uses: aminya/setup-cpp@v1
@@ -161,6 +151,11 @@ jobs:
 
           gcovr: true
           opencppcoverage: true
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}-${{ matrix.os }}-${{matrix.compiler}}-${{matrix.build_type}}-${{matrix.packaging_maintainer_mode}}
 
       - name: Configure CMake
         run: |
@@ -198,7 +193,6 @@ jobs:
         with:
           files: |
             build/*-*${{ matrix.build_type }}*-*.*
-
 
       - name: Publish to codecov
         uses: codecov/codecov-action@v5
