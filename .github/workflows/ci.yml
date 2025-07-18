@@ -134,11 +134,6 @@ jobs:
         with:
           envFile: '.github/constants.env'
 
-      - name: ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ${{ github.job }}-${{ matrix.os }} 
-
       - name: Setup Cpp
         uses: aminya/setup-cpp@v1
         with:
@@ -156,6 +151,11 @@ jobs:
 
           gcovr: true
           opencppcoverage: true
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ github.job }}-${{ matrix.os }}-${{matrix.build_type}}
 
       - name: Configure CMake
         run: |
