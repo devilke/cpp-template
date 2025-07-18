@@ -1,9 +1,6 @@
 include(GenerateExportHeader)
 
-
 add_library(sample_library sample_library.cpp)
-
-
 
 add_library(cpp_template::sample_library ALIAS sample_library)
 
