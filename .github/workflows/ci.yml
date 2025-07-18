@@ -4,7 +4,6 @@ on:
   release:
     types: [published]
   push:
-    tags:
     branches:
       - main
       - develop
@@ -12,6 +11,8 @@ on:
 env:
   CLANG_TIDY_VERSION: "20.1.7"
   VERBOSE: 1
+  PROJECT_NAME: cpp_template
+  nproc: 8
 
 
 jobs:
