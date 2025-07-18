@@ -73,7 +73,7 @@ jobs:
         cmake: true
         ninja: true
         vcpkg: false
-        ccache: false
+        ccache: true
         clangtidy: false
 
         cppcheck: false
