@@ -11,8 +11,6 @@ on:
 env:
   CLANG_TIDY_VERSION: "20.1.7"
   VERBOSE: 1
-  PROJECT_NAME: cpp_template
-  nproc: 8
 
 
 jobs:
@@ -154,7 +152,7 @@ jobs:
           cmake: true
           ninja: true
           vcpkg: false
-          ccache: true
+          ccache: false
           clangtidy: ${{ env.CLANG_TIDY_VERSION }}
 
 
