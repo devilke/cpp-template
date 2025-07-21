@@ -79,10 +79,10 @@ function(cpp_template_setup_dependencies)
       "GLAD_REPRODUCIBLE ON"
   )
   if(glad_ADDED)
-  set(CMAKE_MODULE_PATH
-    ${CMAKE_MODULE_PATH}
-    ${glad_SOURCE_DIR}/cmake)
-  include(GladConfig)
+    set(CMAKE_MODULE_PATH
+      ${CMAKE_MODULE_PATH}
+      ${glad_SOURCE_DIR}/cmake)
+    include(GladConfig)
     glad_add_library(glad_gl_core_46 STATIC API gl:core=4.6)
     add_library(glad::glad ALIAS glad_gl_core_46)
     make_folder("glad" glad_gl_core_46)
