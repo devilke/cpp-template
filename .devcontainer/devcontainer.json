@@ -19,16 +19,17 @@
 		"MESA_GL_VERSION_OVERRIDE": "3.3",
 		"MESA_GLSL_VERSION_OVERRIDE": "330"
 	},
-	"forwardPorts": [
-		6080
-	],
 	"portsAttributes": {
+		"5900": {
+			"label": "noVNC websocket",
+			"onAutoForward": "ignore"
+		},
 		"6080": {
 			"label": "noVNC Desktop",
 			"onAutoForward": "openBrowser"
 		}
 	},
-	"postCreateCommand": "bash /workspaces/cpp-template/.devcontainer/setup-novnc.sh",
+	"postStartCommand": "nohup bash /workspaces/cpp-template/.devcontainer/setup-novnc.sh",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"cmake.configureOnOpen": true,

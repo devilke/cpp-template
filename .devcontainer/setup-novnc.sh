@@ -26,22 +26,18 @@ start_service() {
     if ! is_running "$service_name"; then
         echo "Starting $service_name..."
         eval "$command" > "$log_file" 2>&1 &
-        sleep 2
     else
         echo "$service_name is already running"
     fi
 }
 
 # Start Xvfb (Virtual framebuffer X server)
+export DISPLAY=:1
 start_service "Xvfb" \
     "/usr/bin/Xvfb :1 -screen 0 1024x768x24 -ac +extension GLX +render -noreset" \
     "/tmp/logs/xvfb.log"
 
-# Wait for X server to be ready
-sleep 3
 
-# Start window manager
-export DISPLAY=:1
 start_service "fluxbox" \
     "DISPLAY=:1 fluxbox" \
     "/tmp/logs/fluxbox.log"
@@ -55,11 +51,6 @@ start_service "x11vnc" \
 start_service "websockify" \
     "websockify --web /usr/share/novnc 6080 localhost:5900" \
     "/tmp/logs/novnc.log"
-
 echo "noVNC setup complete!"
-echo "Access the desktop at: http://localhost:6080"
+echo "Access the desktop at: http://localhost:6080/vnc.html"
 echo "Log files are in /tmp/logs/"
-
-# Test OpenGL
-echo "Testing OpenGL..."
-DISPLAY=:1 glxinfo | head -20 || echo "OpenGL test failed, but software rendering should work"
