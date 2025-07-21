@@ -11,7 +11,7 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
         software-properties-common wget apt-utils file zip \
         openssh-client gpg-agent socat rsync \
         make ninja-build git \
-        python3 python3-pip python3-jinja2 python3-venv \
+        python3 python3-pip python3-jinja2 python3-glad python3-venv \
         xorg-dev \
         xvfb x11vnc novnc websockify xauth \
         mesa-utils libglu1-mesa \

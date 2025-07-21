@@ -14,10 +14,7 @@
 	],
 	"containerEnv": {
 		"XDG_RUNTIME_DIR": "/tmp/runtime-vscode",
-		"DISPLAY": ":1",
-		"LIBGL_ALWAYS_SOFTWARE": "1",
-		"MESA_GL_VERSION_OVERRIDE": "3.3",
-		"MESA_GLSL_VERSION_OVERRIDE": "330"
+		"DISPLAY": ":1"
 	},
 	"portsAttributes": {
 		"5900": {
