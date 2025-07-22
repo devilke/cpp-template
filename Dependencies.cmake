@@ -74,9 +74,6 @@ function(cpp_template_setup_dependencies)
     NAME glad
     GITHUB_REPOSITORY Dav1dde/glad
     GIT_TAG v2.0.8
-    OPTIONS
-      "GLAD_INSTALL ON"
-      "GLAD_REPRODUCIBLE ON"
   )
   if(glad_ADDED)
     add_subdirectory(${glad_SOURCE_DIR}/cmake ${glad_BINARY_DIR})
