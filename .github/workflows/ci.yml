@@ -65,7 +65,7 @@ jobs:
             enable_ipo: Off
             gcov_executable: "llvm-cov gcov"
 
-          - os: macos-latest
+          - os: macos-15 # macos-latest
             enable_ipo: Off
 
           # Set up preferred package generators, for given build configurations
