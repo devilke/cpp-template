@@ -7,8 +7,10 @@
 #include <string>
 #include <vector>
 
-#include <GLFW/glfw3.h>
+// Include glad before GLFW to avoid conflicts
 #include <glad/gl.h>
+
+#include <GLFW/glfw3.h>
 
 // #include <glm/glm.hpp>
 // using namespace glm;
