@@ -29,12 +29,12 @@ RefreshEnv.cmd # reload the environment
 ```
 
 ### Necessary Dependencies
-1. A C++ compiler that supports C++17.
+1. A C++ compiler that supports C++23.
 See [cppreference.com](https://en.cppreference.com/w/cpp/compiler_support)
 to see which features are supported by each compiler.
 The following compilers should work:
 
-  * [gcc 7+](https://gcc.gnu.org/)
+  * [gcc 14+](https://gcc.gnu.org/)
 	<details>
 	<summary>Install command</summary>
 
@@ -51,7 +51,7 @@ The following compilers should work:
 			brew install gcc
 	</details>
 
-  * [clang 6+](https://clang.llvm.org/)
+  * [clang 20+](https://clang.llvm.org/)
 	<details>
 	<summary>Install command</summary>
 
