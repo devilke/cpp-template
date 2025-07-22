@@ -8,7 +8,8 @@
 #include <string>
 #include <vector>
 
-#include <glad/gl.h>
+#include <glad/gl.h>// NOLINT(language-extension-token)
+
 //   Include GLFW
 #include <GLFW/glfw3.h>
 
@@ -173,7 +174,8 @@ int main()
   // The following commands will talk about our 'vertexbuffer' buffer
   glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
   // Give our vertices to OpenGL.
-  glBufferData(GL_ARRAY_BUFFER, g_vertex_buffer_data.size() * sizeof(GLfloat), g_vertex_buffer_data.data(), GL_STATIC_DRAW);
+  glBufferData(
+    GL_ARRAY_BUFFER, g_vertex_buffer_data.size() * sizeof(GLfloat), g_vertex_buffer_data.data(), GL_STATIC_DRAW);
 
   const GLuint programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 
