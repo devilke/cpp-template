@@ -9,7 +9,7 @@ on:
       - develop
 
 env:
-  CLANG_TIDY_VERSION: "20.1.8"
+  CLANG_TIDY_VERSION: "20.1.7"
   VERBOSE: 1
 
 
@@ -30,11 +30,11 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macos-latest
+          - macos-15 # macos-latest
           - windows-latest
         compiler:
           # you can specify the version after `-` like "llvm-15.0.2".
-          - llvm-20.1.8
+          - llvm-20.1.7
           - gcc-14
         generator:
           - "Ninja Multi-Config"
@@ -51,7 +51,7 @@ jobs:
           # determined to be too buggy to support
           - os: windows-latest
             compiler: gcc-14
-          - os: macos-latest
+          - os: macos-15 # macos-latest
             compiler: gcc-14
 
         include:
@@ -61,7 +61,7 @@ jobs:
             gcov_executable: gcov-14
             enable_ipo: On
 
-          - compiler: llvm-20.1.8
+          - compiler: llvm-20.1.7
             enable_ipo: Off
             gcov_executable: "llvm-cov gcov"
 
