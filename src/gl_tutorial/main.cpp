@@ -103,20 +103,19 @@ GLuint LoadShaders(const char *vertex_file_path, const char *fragment_file_path)
   return ProgramID;
 }
 
-// NOLINTNEXTLINE(bugprone-exception-escape)
-int main()
+GLFWwindow *initializeOpenGL()
 {
   // Initialize GLFW
   if (glfwInit() != GL_TRUE) {
     std::println(std::cerr, "Failed to initialize GLFW");
-    return -1;
+    return nullptr;
   }
 
   glfwWindowHint(GLFW_SAMPLES, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);// To make macOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// We don't want the old OpenGL
 
   // Open a window and create its OpenGL context
   constexpr auto width = 800;
@@ -127,7 +126,7 @@ int main()
       "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the "
       "tutorials.");
     glfwTerminate();
-    return -1;
+    return nullptr;
   }
 
   glfwMakeContextCurrent(window);
@@ -135,11 +134,20 @@ int main()
   const int version = gladLoadGL(glfwGetProcAddress);
   if (version == 0) {
     std::println("Failed to initialize OpenGL context");
-    return -1;
+    return nullptr;
   }
 
   // Successfully loaded OpenGL
   std::println("Loaded OpenGL {}.{}", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+
+  return window;
+}
+
+// NOLINTNEXTLINE(bugprone-exception-escape)
+int main()
+{
+  GLFWwindow *window = initializeOpenGL();
+  if (window == nullptr) { return -1; }
 
   // Dark blue background
   const GLfloat red = 0.0F;
@@ -153,17 +161,13 @@ int main()
   glBindVertexArray(VertexArrayID);
 
   // An array of 3 vectors which represents 3 vertices
+  // clang-format off
   static const std::array<GLfloat, 9> g_vertex_buffer_data = {
-    -1.0F,
-    -1.0F,
-    0.0F,
-    1.0F,
-    -1.0F,
-    0.0F,
-    0.0F,
-    1.0F,
-    0.0F,
+    -1.0F, -1.0F, 0.0F,
+     1.0F, -1.0F, 0.0F,
+     0.0F,  1.0F, 0.0F,
   };
+  // clang-format on
 
   // This will identify our vertex buffer
   GLuint vertexbuffer = 0;
@@ -194,8 +198,10 @@ int main()
       0,// stride
       nullptr// array buffer offset
     );
+
     // Draw the triangle !
     glDrawArrays(GL_TRIANGLES, 0, 3);// Starting from vertex 0; 3 vertices total -> 1 triangle
+
     glDisableVertexAttribArray(0);
 
     // Swap buffers
