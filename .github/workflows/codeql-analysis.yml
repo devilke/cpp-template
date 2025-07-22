@@ -58,11 +58,15 @@ jobs:
         packaging_maintainer_mode: ${{ matrix.packaging_maintainer_mode }}
         generator: ${{ matrix.generator }}
 
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+    - run: pip install glad2 jinja2
+
     - name: Project Name
       uses: cardinalby/export-env-action@v2
       with:
         envFile: '.github/constants.env'
-
 
     - name: Setup Cpp
       uses: aminya/setup-cpp@v1
@@ -80,6 +84,10 @@ jobs:
 
         gcovr: false
         opencppcoverage: false
+
+    - name: Install X11 dependencies
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
 
       # make sure coverage is only enabled for Debug builds, since it sets -O0 to make sure coverage
       # has meaningful results
