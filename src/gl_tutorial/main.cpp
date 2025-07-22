@@ -1,4 +1,3 @@
-// Include standard headers
 #include <array>
 #include <cstdlib>
 #include <fstream>
@@ -8,12 +7,9 @@
 #include <string>
 #include <vector>
 
-#include <glad/gl.h>// NOLINT(language-extension-token)
-
-//   Include GLFW
 #include <GLFW/glfw3.h>
+#include <glad/gl.h>
 
-// Include GLM
 // #include <glm/glm.hpp>
 // using namespace glm;
 
