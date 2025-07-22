@@ -17,12 +17,12 @@ target_link_libraries(
   gl-tutorial
   PRIVATE cpp_template::cpp_template_options
           cpp_template::cpp_template_warnings
-          glad::glad
           )
 
 target_link_system_libraries(
   gl-tutorial
   PRIVATE
+          glad::glad
           glfw
           glm::glm
           )
