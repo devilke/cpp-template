@@ -73,17 +73,14 @@ function(cpp_template_setup_dependencies)
   CPMAddPackage(
     NAME glad
     GITHUB_REPOSITORY Dav1dde/glad
-    VERSION 2.0.8
+    GIT_TAG v2.0.8
     OPTIONS
       "GLAD_INSTALL ON"
       "GLAD_REPRODUCIBLE ON"
   )
   if(glad_ADDED)
-    set(CMAKE_MODULE_PATH
-      ${CMAKE_MODULE_PATH}
-      ${glad_SOURCE_DIR}/cmake)
-    include(GladConfig)
-    glad_add_library(glad_gl_core_46 STATIC API gl:core=4.6)
+    add_subdirectory(${glad_SOURCE_DIR}/cmake ${glad_BINARY_DIR})
+    glad_add_library(glad_gl_core_46 REPRODUCIBLE API gl:core=4.6)
     add_library(glad::glad ALIAS glad_gl_core_46)
     make_folder("glad" glad_gl_core_46)
   endif()

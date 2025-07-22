@@ -1,4 +1,17 @@
-add_executable(gl-tutorial main.cpp)
+add_executable(gl-tutorial 
+  main.cpp
+  SimpleFragmentShader.fragmentshader
+  SimpleVertexShader.vertexshader)
+
+# Install shader files to the binary directory
+install(FILES 
+  SimpleFragmentShader.fragmentshader
+  SimpleVertexShader.vertexshader
+  DESTINATION bin/src/gl_tutorial)
+
+# Copy shader files to build directory for development
+configure_file(SimpleFragmentShader.fragmentshader ${CMAKE_BINARY_DIR}/src/gl_tutorial/SimpleFragmentShader.fragmentshader COPYONLY)
+configure_file(SimpleVertexShader.vertexshader ${CMAKE_BINARY_DIR}/src/gl_tutorial/SimpleVertexShader.vertexshader COPYONLY)
 
 target_link_libraries(
   gl-tutorial
