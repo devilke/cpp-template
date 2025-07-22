@@ -52,7 +52,7 @@ jobs:
           - os: windows-latest
             compiler: gcc-14
           - os: macos-latest
-            compiler: llvm-20.1.7
+            compiler: gcc-14
 
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
