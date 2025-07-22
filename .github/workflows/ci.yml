@@ -129,6 +129,12 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+      - run: pip install glad2 jinja2
+
       - name: Project Name
         uses: cardinalby/export-env-action@v2
         with:
