@@ -1,109 +1,21 @@
 #include <array>
 #include <cstdlib>
-#include <fstream>
 #include <iostream>
 #include <print>
-#include <sstream>
-#include <string>
-#include <vector>
 
 // Include glad before GLFW to avoid conflicts
 #include <glad/gl.h>
 
 #include <GLFW/glfw3.h>
 
-#include <glm/ext/matrix_clip_space.hpp>// glm::perspective
+// #include <glm/ext/matrix_clip_space.hpp>// glm::perspective
 #include <glm/ext/matrix_float4x4.hpp>// glm::mat4
-#include <glm/ext/matrix_transform.hpp>// glm::translate, glm::rotate, glm::scale
-#include <glm/trigonometric.hpp>// glm::radians
+// #include <glm/ext/matrix_transform.hpp>// glm::translate, glm::rotate, glm::scale
+// #include <glm/trigonometric.hpp>// glm::radians
 
-GLuint LoadShaders(const char *vertex_file_path, const char *fragment_file_path)
-{
-  // Create the shaders
-  const GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-  const GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+#include "controls.hpp"
+#include "shader.hpp"
 
-  // Read the Vertex Shader code from the file
-  std::string VertexShaderCode;
-  std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
-  if (VertexShaderStream.is_open()) {
-    std::stringstream sstr{};
-    sstr << VertexShaderStream.rdbuf();
-    VertexShaderCode = sstr.str();
-    VertexShaderStream.close();
-  } else {
-    std::println(
-      "Impossible to open {}. Are you in the right directory ? Don't forget to read the FAQ !", vertex_file_path);
-    return 0;
-  }
-
-  // Read the Fragment Shader code from the file
-  std::string FragmentShaderCode;
-  std::ifstream FragmentShaderStream(fragment_file_path, std::ios::in);
-  if (FragmentShaderStream.is_open()) {
-    std::stringstream sstr{};
-    sstr << FragmentShaderStream.rdbuf();
-    FragmentShaderCode = sstr.str();
-    FragmentShaderStream.close();
-  }
-
-  GLint Result = GL_FALSE;
-  int InfoLogLength = 0;
-
-  // Compile Vertex Shader
-  std::println("Compiling shader : {}", vertex_file_path);
-  char const *VertexSourcePointer = VertexShaderCode.c_str();
-  glShaderSource(VertexShaderID, 1, &VertexSourcePointer, nullptr);
-  glCompileShader(VertexShaderID);
-
-  // Check Vertex Shader
-  glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-  glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-  if (InfoLogLength > 0) {
-    std::vector<char> VertexShaderErrorMessage(static_cast<size_t>(InfoLogLength));
-    glGetShaderInfoLog(VertexShaderID, InfoLogLength, nullptr, VertexShaderErrorMessage.data());
-    std::println("{}", VertexShaderErrorMessage.data());
-  }
-
-  // Compile Fragment Shader
-  std::println("Compiling shader : {}", fragment_file_path);
-  char const *FragmentSourcePointer = FragmentShaderCode.c_str();
-  glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer, nullptr);
-  glCompileShader(FragmentShaderID);
-
-  // Check Fragment Shader
-  glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-  glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-  if (InfoLogLength > 0) {
-    std::vector<char> FragmentShaderErrorMessage(static_cast<size_t>(InfoLogLength));
-    glGetShaderInfoLog(FragmentShaderID, InfoLogLength, nullptr, FragmentShaderErrorMessage.data());
-    std::println("{}", FragmentShaderErrorMessage.data());
-  }
-
-  // Link the program
-  std::println("Linking program");
-  const GLuint ProgramID = glCreateProgram();
-  glAttachShader(ProgramID, VertexShaderID);
-  glAttachShader(ProgramID, FragmentShaderID);
-  glLinkProgram(ProgramID);
-
-  // Check the program
-  glGetProgramiv(ProgramID, GL_LINK_STATUS, &Result);
-  glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-  if (InfoLogLength > 0) {
-    std::vector<char> ProgramErrorMessage(static_cast<size_t>(InfoLogLength));
-    glGetProgramInfoLog(ProgramID, InfoLogLength, nullptr, ProgramErrorMessage.data());
-    std::println("{}", ProgramErrorMessage.data());
-  }
-
-  glDetachShader(ProgramID, VertexShaderID);
-  glDetachShader(ProgramID, FragmentShaderID);
-
-  glDeleteShader(VertexShaderID);
-  glDeleteShader(FragmentShaderID);
-
-  return ProgramID;
-}
 
 GLFWwindow *initializeOpenGL()
 {
@@ -257,42 +169,35 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data.data(), GL_STATIC_DRAW);
 
-  const GLuint programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+  const GLuint shaders = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 
   // Get a handle for our "MVP" uniform
-  const GLint MatrixID = glGetUniformLocation(programID, "MVP");
-
-  // Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-  const glm::mat4 Projection = glm::perspective(glm::radians(45.0F), 4.0F / 3.0F, 0.1F, 100.0F);
-  // Or, for an ortho camera :
-  // glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
-
-  // Camera matrix
-  const glm::mat4 View = glm::lookAt(glm::vec3(4, 3, 3),// Camera is at (4,3,3), in World Space
-    glm::vec3(0, 0, 0),// and looks at the origin
-    glm::vec3(0, 1, 0)// Head is up (set to 0,-1,0 to look upside-down)
-  );
-  // Model matrix : an identity matrix (model will be at the origin)
-  const glm::mat4 Model = glm::mat4(1.0F);
-  // Our ModelViewProjection : multiplication of our 3 matrices
-  const glm::mat4 MVP = Projection * View * Model;// Remember, matrix multiplication is the other way around
+  const GLint matrix = glGetUniformLocation(shaders, "MVP");
 
   // Enable depth test
   glEnable(GL_DEPTH_TEST);
   // Accept fragment if it closer to the camera than the former one
   glDepthFunc(GL_LESS);
+  glEnable(GL_CULL_FACE);
 
 
   // Main loop
   while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0) {
-    // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
+    // Clear the screen
     glClear(static_cast<GLbitfield>(GL_COLOR_BUFFER_BIT) | static_cast<GLbitfield>(GL_DEPTH_BUFFER_BIT));
 
-    glUseProgram(programID);
+    glUseProgram(shaders);
+
+    // Compute the MVP matrix from keyboard and mouse input
+    computeMatricesFromInputs(window);
+    const glm::mat4 ProjectionMatrix = getProjectionMatrix();
+    const glm::mat4 ViewMatrix = getViewMatrix();
+    const glm::mat4 ModelMatrix{ 1.0 };
+    const glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
     // Send our transformation to the currently bound shader,
     // in the "MVP" uniform
-    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+    glUniformMatrix4fv(matrix, 1, GL_FALSE, &MVP[0][0]);
 
     // 1st attribute buffer : vertices
     glEnableVertexAttribArray(0);
@@ -324,6 +229,12 @@ int main()
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
+
+  glDeleteBuffers(1, &vertexbuffer);
+  // glDeleteBuffers(1, &uvbuffer);
+  glDeleteProgram(shaders);
+  // glDeleteTextures(1, &textures);
+  glDeleteVertexArrays(1, &VertexArrayID);
 
   // Close OpenGL window and terminate GLFW
   glfwTerminate();
