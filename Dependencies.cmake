@@ -64,20 +64,12 @@ function(cpp_template_setup_dependencies)
   find_targets(glfw_targets ${glfw_SOURCE_DIR})
   make_folder("glfw" ${glfw_targets})
 
-  CPMAddPackage(
-    NAME glm
-    GITHUB_REPOSITORY g-truc/glm
-    GIT_TAG 1.0.1
-  )
+  CPMAddPackage("gh:g-truc/glm#master")
 
-  CPMAddPackage(
-    NAME glad
-    GITHUB_REPOSITORY Dav1dde/glad
-    GIT_TAG v2.0.8
-  )
+  CPMAddPackage("gh:Dav1dde/glad@2.0.8")
   if(glad_ADDED)
     add_subdirectory(${glad_SOURCE_DIR}/cmake ${glad_BINARY_DIR})
-    glad_add_library(glad_gl_core_46 REPRODUCIBLE API gl:core=4.6)
+    glad_add_library(glad_gl_core_46 REPRODUCIBLE API gl:core=4.6 LANGUAGE C++)
     add_library(glad::glad ALIAS glad_gl_core_46)
     make_folder("glad" glad_gl_core_46)
   endif()

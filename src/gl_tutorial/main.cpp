@@ -12,8 +12,10 @@
 
 #include <GLFW/glfw3.h>
 
-// #include <glm/glm.hpp>
-// using namespace glm;
+#include <glm/ext/matrix_clip_space.hpp>// glm::perspective
+#include <glm/ext/matrix_float4x4.hpp>// glm::mat4
+#include <glm/ext/matrix_transform.hpp>// glm::translate, glm::rotate, glm::scale
+#include <glm/trigonometric.hpp>// glm::radians
 
 GLuint LoadShaders(const char *vertex_file_path, const char *fragment_file_path)
 {
@@ -103,20 +105,19 @@ GLuint LoadShaders(const char *vertex_file_path, const char *fragment_file_path)
   return ProgramID;
 }
 
-// NOLINTNEXTLINE(bugprone-exception-escape)
-int main()
+GLFWwindow *initializeOpenGL()
 {
   // Initialize GLFW
   if (glfwInit() != GL_TRUE) {
     std::println(std::cerr, "Failed to initialize GLFW");
-    return -1;
+    return nullptr;
   }
 
   glfwWindowHint(GLFW_SAMPLES, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);// To make macOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// We don't want the old OpenGL
 
   // Open a window and create its OpenGL context
   constexpr auto width = 800;
@@ -127,7 +128,7 @@ int main()
       "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the "
       "tutorials.");
     glfwTerminate();
-    return -1;
+    return nullptr;
   }
 
   glfwMakeContextCurrent(window);
@@ -135,11 +136,20 @@ int main()
   const int version = gladLoadGL(glfwGetProcAddress);
   if (version == 0) {
     std::println("Failed to initialize OpenGL context");
-    return -1;
+    return nullptr;
   }
 
   // Successfully loaded OpenGL
   std::println("Loaded OpenGL {}.{}", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+
+  return window;
+}
+
+// NOLINTNEXTLINE(bugprone-exception-escape)
+int main()
+{
+  GLFWwindow *window = initializeOpenGL();
+  if (window == nullptr) { return -1; }
 
   // Dark blue background
   const GLfloat red = 0.0F;
@@ -153,17 +163,13 @@ int main()
   glBindVertexArray(VertexArrayID);
 
   // An array of 3 vectors which represents 3 vertices
+  // clang-format off
   static const std::array<GLfloat, 9> g_vertex_buffer_data = {
-    -1.0F,
-    -1.0F,
-    0.0F,
-    1.0F,
-    -1.0F,
-    0.0F,
-    0.0F,
-    1.0F,
-    0.0F,
+    -1.0F, -1.0F, 0.0F,
+     1.0F, -1.0F, 0.0F,
+     0.0F,  1.0F, 0.0F,
   };
+  // clang-format on
 
   // This will identify our vertex buffer
   GLuint vertexbuffer = 0;
@@ -177,12 +183,35 @@ int main()
 
   const GLuint programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 
+  // Get a handle for our "MVP" uniform
+  const GLint MatrixID = glGetUniformLocation(programID, "MVP");
+
+  // Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+  const glm::mat4 Projection = glm::perspective(glm::radians(45.0F), 4.0F / 3.0F, 0.1F, 100.0F);
+  // Or, for an ortho camera :
+  // glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
+
+  // Camera matrix
+  const glm::mat4 View = glm::lookAt(glm::vec3(4, 3, 3),// Camera is at (4,3,3), in World Space
+    glm::vec3(0, 0, 0),// and looks at the origin
+    glm::vec3(0, 1, 0)// Head is up (set to 0,-1,0 to look upside-down)
+  );
+  // Model matrix : an identity matrix (model will be at the origin)
+  const glm::mat4 Model = glm::mat4(1.0F);
+  // Our ModelViewProjection : multiplication of our 3 matrices
+  const glm::mat4 MVP = Projection * View * Model;// Remember, matrix multiplication is the other way around
+
+
   // Main loop
   while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0) {
     // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
     glClear(static_cast<GLbitfield>(GL_COLOR_BUFFER_BIT) | static_cast<GLbitfield>(GL_DEPTH_BUFFER_BIT));
 
     glUseProgram(programID);
+
+    // Send our transformation to the currently bound shader,
+    // in the "MVP" uniform
+    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
     // 1st attribute buffer : vertices
     glEnableVertexAttribArray(0);
@@ -194,8 +223,10 @@ int main()
       0,// stride
       nullptr// array buffer offset
     );
+
     // Draw the triangle !
     glDrawArrays(GL_TRIANGLES, 0, 3);// Starting from vertex 0; 3 vertices total -> 1 triangle
+
     glDisableVertexAttribArray(0);
 
     // Swap buffers
