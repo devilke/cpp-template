@@ -316,7 +316,7 @@ int main()
       nullptr// array buffer offset
     );
 
-    glDrawArrays(GL_TRIANGLES, 0, g_vertex_buffer_data.size());
+    glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(g_vertex_buffer_data.size()));
 
     glDisableVertexAttribArray(0);
 
