@@ -12,8 +12,10 @@
 
 #include <GLFW/glfw3.h>
 
-// #include <glm/glm.hpp>
-// using namespace glm;
+#include <glm/ext/matrix_clip_space.hpp>// glm::perspective
+#include <glm/ext/matrix_float4x4.hpp>// glm::mat4
+#include <glm/ext/matrix_transform.hpp>// glm::translate, glm::rotate, glm::scale
+#include <glm/trigonometric.hpp>// glm::radians
 
 GLuint LoadShaders(const char *vertex_file_path, const char *fragment_file_path)
 {
@@ -181,12 +183,35 @@ int main()
 
   const GLuint programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 
+  // Get a handle for our "MVP" uniform
+  const GLint MatrixID = glGetUniformLocation(programID, "MVP");
+
+  // Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+  const glm::mat4 Projection = glm::perspective(glm::radians(45.0F), 4.0F / 3.0F, 0.1F, 100.0F);
+  // Or, for an ortho camera :
+  // glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
+
+  // Camera matrix
+  const glm::mat4 View = glm::lookAt(glm::vec3(4, 3, 3),// Camera is at (4,3,3), in World Space
+    glm::vec3(0, 0, 0),// and looks at the origin
+    glm::vec3(0, 1, 0)// Head is up (set to 0,-1,0 to look upside-down)
+  );
+  // Model matrix : an identity matrix (model will be at the origin)
+  const glm::mat4 Model = glm::mat4(1.0F);
+  // Our ModelViewProjection : multiplication of our 3 matrices
+  const glm::mat4 MVP = Projection * View * Model;// Remember, matrix multiplication is the other way around
+
+
   // Main loop
   while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0) {
     // Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.
     glClear(static_cast<GLbitfield>(GL_COLOR_BUFFER_BIT) | static_cast<GLbitfield>(GL_DEPTH_BUFFER_BIT));
 
     glUseProgram(programID);
+
+    // Send our transformation to the currently bound shader,
+    // in the "MVP" uniform
+    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
     // 1st attribute buffer : vertices
     glEnableVertexAttribArray(0);
