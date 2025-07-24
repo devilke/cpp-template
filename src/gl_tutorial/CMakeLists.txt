@@ -1,5 +1,9 @@
 add_executable(gl-tutorial 
   main.cpp
+  shader.cpp
+  shader.hpp
+  controls.cpp
+  controls.hpp
   SimpleFragmentShader.fragmentshader
   SimpleVertexShader.vertexshader)
 
