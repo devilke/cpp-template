@@ -1,5 +1,9 @@
-// Include GLFW
+#include <glad/gl.h>
+
 #include <GLFW/glfw3.h>
+
+// Include standard math functions
+#include <cmath>
 
 // Include GLM
 #include <glm/ext/matrix_clip_space.hpp>// glm::perspective
@@ -62,7 +66,7 @@ void computeMatricesFromInputs(GLFWwindow *window)
 
   // Direction : Spherical coordinates to Cartesian coordinates conversion
   const glm::vec3 direction(
-    cos(verticalAngle) * sin(horizontalAngle), sin(verticalAngle), cos(verticalAngle) * cos(horizontalAngle));
+    std::cos(verticalAngle) * std::sin(horizontalAngle), std::sin(verticalAngle), std::cos(verticalAngle) * std::cos(horizontalAngle));
 
   // Right vector
   const glm::vec3 rightVector =
