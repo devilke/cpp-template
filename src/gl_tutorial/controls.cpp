@@ -1,3 +1,4 @@
+// NOLINTNEXTLINE(misc-include-cleaner)
 #include <glad/gl.h>
 
 #include <GLFW/glfw3.h>

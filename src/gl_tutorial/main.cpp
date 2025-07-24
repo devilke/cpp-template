@@ -1,5 +1,4 @@
 #include <array>
-#include <cstdlib>
 #include <iostream>
 #include <print>
 
@@ -8,10 +7,7 @@
 
 #include <GLFW/glfw3.h>
 
-// #include <glm/ext/matrix_clip_space.hpp>// glm::perspective
 #include <glm/ext/matrix_float4x4.hpp>// glm::mat4
-// #include <glm/ext/matrix_transform.hpp>// glm::translate, glm::rotate, glm::scale
-// #include <glm/trigonometric.hpp>// glm::radians
 
 #include "controls.hpp"
 #include "shader.hpp"
